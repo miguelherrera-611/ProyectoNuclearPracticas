@@ -21,7 +21,7 @@ import java.util.List;
  * SOLID — SRP: solo delega peticiones HTTP al servicio.
  */
 @RestController
-@RequestMapping("/api/v1/expedientes")
+@RequestMapping("/v1/expedientes")
 @RequiredArgsConstructor
 public class ExpedienteController {
 

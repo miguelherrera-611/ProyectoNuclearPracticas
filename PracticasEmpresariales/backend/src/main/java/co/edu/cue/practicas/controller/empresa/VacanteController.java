@@ -15,7 +15,7 @@ import java.util.List;
 
 /** GPE-152 / GPE-153 */
 @RestController
-@RequestMapping("/api/v1/vacantes")
+@RequestMapping("/v1/vacantes")
 @RequiredArgsConstructor
 public class VacanteController {
 

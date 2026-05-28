@@ -14,7 +14,7 @@ import java.util.List;
 
 /** GPE-151 */
 @RestController
-@RequestMapping("/api/v1/tutores")
+@RequestMapping("/v1/tutores")
 @RequiredArgsConstructor
 public class TutorEmpresarialController {
 

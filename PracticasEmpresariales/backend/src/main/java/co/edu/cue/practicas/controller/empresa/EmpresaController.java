@@ -20,7 +20,7 @@ import java.util.List;
  *              No tiene lógica de negocio.
  */
 @RestController
-@RequestMapping("/api/v1/empresas")
+@RequestMapping("/v1/empresas")
 @RequiredArgsConstructor
 public class EmpresaController {
 

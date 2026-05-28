@@ -8,6 +8,8 @@ import co.edu.cue.practicas.model.entity.TutorEmpresarial;
 import co.edu.cue.practicas.model.entity.Vacante;
 import org.springframework.stereotype.Component;
 
+import java.util.ArrayList;
+
 /**
  * SOLID — SRP: responsabilidad única → convertir entidades a DTOs de respuesta.
  *
@@ -32,7 +34,10 @@ public class Dev3Mapper {
                 e.getNombreContacto(),
                 e.getCorreo(),
                 e.getEstado(),
-                e.getAreasDisponibles(),
+                // Copia la colección mientras la sesión de Hibernate está abierta.
+                // Sin esto, Hibernate retorna un PersistentBag (lazy proxy) que falla
+                // al serializar a JSON porque la sesión ya está cerrada fuera de @Transactional.
+                new ArrayList<>(e.getAreasDisponibles()),
                 e.getCreadoEn()
         );
     }
