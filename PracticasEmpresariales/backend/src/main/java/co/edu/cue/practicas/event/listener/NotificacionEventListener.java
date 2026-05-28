@@ -1,5 +1,7 @@
 package co.edu.cue.practicas.event.listener;
 
+import co.edu.cue.practicas.event.AptitudMarcadaEvent;
+import co.edu.cue.practicas.event.EstudiantesEnviadosEvent;
 import co.edu.cue.practicas.event.UsuarioCreadoEvent;
 import co.edu.cue.practicas.model.enums.Rol;
 import co.edu.cue.practicas.service.notificacion.EmailService;
@@ -60,5 +62,19 @@ public class NotificacionEventListener {
             log.info("[OBSERVER] Nuevo estudiante creado: {} — notificando a Coordinación Académica", usuario.getNombre());
             emailService.notificarNuevoEstudiante(usuario);
         }
+    }
+
+    @EventListener
+    @Async
+    public void manejarAptitudMarcada(AptitudMarcadaEvent evento) {
+        var estudiante = evento.getEstudiante();
+        emailService.notificarAptitudEstudiante(estudiante.getUsuario(), evento.isApto());
+    }
+
+    @EventListener
+    @Async
+    public void manejarEstudiantesEnviados(EstudiantesEnviadosEvent evento) {
+        int total = evento.getEstudiantes().size();
+        emailService.notificarEnvioAProceso("Coordinador de Practicas", total);
     }
 }

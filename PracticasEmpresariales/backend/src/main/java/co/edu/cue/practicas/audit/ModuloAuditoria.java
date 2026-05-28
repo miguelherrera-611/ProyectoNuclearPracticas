@@ -29,4 +29,13 @@ public final class ModuloAuditoria {
 
     /** Módulo de gestión de programas académicos: crear, desactivar */
     public static final String PROGRAMAS  = "PROGRAMAS";
+
+    /** Módulo de catálogo de prácticas institucional */
+    public static final String CATALOGO_PRACTICAS = "CATALOGO_PRACTICAS";
+
+    /** Módulo de gestión de estudiantes */
+    public static final String ESTUDIANTES = "ESTUDIANTES";
+
+    /** Módulo de validación de aptitud de estudiantes */
+    public static final String VALIDACION_APTITUD = "VALIDACION_APTITUD";
 }

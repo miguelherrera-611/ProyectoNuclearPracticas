@@ -67,4 +67,16 @@ public class EmailService {
         log.info("[EMAIL] Notificación de nuevo estudiante pendiente: {} → Coordinación Académica", estudiante.getNombre());
         // En Sprint 2 se implementa la consulta de coordinadores por facultad para notificarlos
     }
+
+    @Async
+    public void notificarAptitudEstudiante(Usuario estudiante, boolean apto) {
+        String estado = apto ? "APTO" : "NO_APTO";
+        log.info("[EMAIL] Notificación de aptitud {} para: {}", estado, estudiante.getNombre());
+        // En Sprint 2 solo se registra el evento; el envio real se conecta en sprints posteriores
+    }
+
+    @Async
+    public void notificarEnvioAProceso(String coordinador, int total) {
+        log.info("[EMAIL] Notificación de {} estudiantes enviados al proceso para: {}", total, coordinador);
+    }
 }
