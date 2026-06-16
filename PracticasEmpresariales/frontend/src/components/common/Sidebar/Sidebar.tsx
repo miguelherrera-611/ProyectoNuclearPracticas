@@ -1,8 +1,10 @@
 import { NavLink } from 'react-router-dom'
 import { useAuth } from '../../../context/AuthContext'
 import { MENUS_POR_ROL } from '../../../constants/menus'
+
 import { ROL_LABELS } from '../../../constants/roles'
 import { BrandLogo } from '../BrandLogo/BrandLogo'
+
 
 interface SidebarProps {
   isOpen: boolean
@@ -44,14 +46,7 @@ export default function Sidebar({ isOpen, onClose }: SidebarProps) {
       {/* Info usuario */}
       <div className="px-4 py-3 border-b border-blue-800">
         <p className="text-sm font-medium truncate">{user.nombre}</p>
-        <span className="text-xs bg-blue-700 px-2 py-0.5 rounded-full mt-1 inline-block">
-          {ROL_LABELS[user.rol]}
-        </span>
-        {user.etiquetaCargo && (
-          <span className="text-xs text-blue-300 block mt-0.5">
-            {user.etiquetaCargo === 'SECRETARIA' ? 'Secretaría' : 'Coordinación'}
-          </span>
-        )}
+        <p className="text-xs text-blue-300 mt-0.5 truncate">{user.correo}</p>
       </div>
 
       {/* Menú dinámico por rol */}
@@ -81,7 +76,7 @@ export default function Sidebar({ isOpen, onClose }: SidebarProps) {
           onClick={logout}
           className="w-full text-sm text-blue-300 hover:text-white transition-colors text-left flex items-center gap-2"
         >
-          <span>🚪</span> Cerrar sesión
+          <span> </span> Cerrar sesión
         </button>
       </div>
     </aside>
