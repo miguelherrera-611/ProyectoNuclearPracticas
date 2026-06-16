@@ -1,6 +1,7 @@
 import { useState, FormEvent, useRef, useEffect, KeyboardEvent, ClipboardEvent } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useAuth } from '../../context/AuthContext'
+import { BrandLogo } from '../../components/common/BrandLogo/BrandLogo'
 
 type Paso = 'credenciales' | 'verificacion'
 
@@ -136,11 +137,13 @@ export default function LoginPage() {
   const codigoExpirado = contadorIniciado && tiempoRestante === 0
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-cue-primary via-cue-primary to-cue-secondary flex items-center justify-center p-4">
-      <div className="bg-white rounded-2xl w-full max-w-md overflow-hidden border-2 border-white/20 shadow-[0_8px_40px_rgba(0,0,0,0.55)]">
+    <div className="login-page min-h-screen flex items-center justify-center p-4 sm:p-6">
+      <div className="login-shell w-full max-w-md overflow-hidden">
+        <div className="login-card w-full overflow-hidden bg-white/95 shadow-[0_28px_90px_rgba(10,25,47,0.28)] backdrop-blur">
 
         {/* Header */}
-        <div className="bg-cue-primary px-6 py-7 sm:px-8 sm:py-8 text-center">
+        <div className="login-brand-header bg-white px-6 py-7 sm:px-8 sm:py-8 text-center border-b border-gray-100">
+          <BrandLogo variant="full" />
           <h1 className="text-xl sm:text-2xl font-bold text-white">Sistema de Prácticas</h1>
           <p className="text-blue-300 text-xs sm:text-sm mt-1">Universidad Alexander Von Humboldt</p>
         </div>
@@ -305,6 +308,7 @@ export default function LoginPage() {
               </div>
             </>
           )}
+        </div>
         </div>
       </div>
     </div>
