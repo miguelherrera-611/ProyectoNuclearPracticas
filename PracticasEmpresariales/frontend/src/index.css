@@ -21,6 +21,70 @@
   .input-field {
     @apply w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-cue-accent focus:border-transparent;
   }
+  .login-brand-header > h1 {
+    @apply sr-only;
+  }
+  .login-brand-header > p {
+    @apply text-gray-500 mt-3;
+  }
+  .login-page {
+    background:
+      linear-gradient(135deg, rgba(7, 18, 35, 0.74), rgba(16, 38, 68, 0.62) 52%, rgba(101, 31, 40, 0.58)),
+      url('./assets/images/humboldt-sede-principal.webp');
+    background-size: cover;
+    background-position: center;
+    background-attachment: fixed;
+  }
+  .login-shell {
+    border-radius: 8px;
+    border: 1px solid rgba(148, 163, 184, 0.28);
+    box-shadow: 0 28px 70px rgba(15, 23, 42, 0.18);
+    animation: login-card-enter 760ms ease-out both;
+  }
+  .login-card {
+    border-radius: 0;
+    position: relative;
+  }
+  .login-card::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    border: 1px solid rgba(255, 255, 255, 0.64);
+    pointer-events: none;
+  }
+  .login-card .btn-primary {
+    position: relative;
+    overflow: hidden;
+    box-shadow: 0 12px 26px rgba(26, 54, 93, 0.22);
+  }
+  .login-card .btn-primary::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    transform: translateX(-120%);
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.28), transparent);
+    animation: login-button-sheen 3.8s ease-in-out infinite;
+  }
+  .brand-logo-motion {
+    animation: brand-logo-enter 680ms ease-out both;
+  }
+  .brand-logo-mark {
+    transform-origin: center;
+    animation: brand-logo-float 4.8s ease-in-out 680ms infinite;
+  }
+  .brand-logo-title {
+    position: relative;
+    overflow: hidden;
+  }
+  .brand-logo-title::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    transform: translateX(-120%);
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.55), transparent);
+    animation: brand-logo-sheen 4.6s ease-in-out 1.2s infinite;
+    pointer-events: none;
+  }
   .card {
     @apply bg-white rounded-xl shadow-sm border border-gray-100 p-6;
   }
@@ -32,5 +96,54 @@
   }
   .badge-rol {
     @apply bg-blue-100 text-blue-800 text-xs font-semibold px-2.5 py-0.5 rounded-full;
+  }
+}
+
+@keyframes login-card-enter {
+  from {
+    opacity: 0;
+    transform: translateY(18px) scale(0.98);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+@keyframes login-button-sheen {
+  0%, 42% {
+    transform: translateX(-120%);
+  }
+  72%, 100% {
+    transform: translateX(120%);
+  }
+}
+
+@keyframes brand-logo-enter {
+  from {
+    opacity: 0;
+    transform: translateY(10px) scale(0.96);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+@keyframes brand-logo-float {
+  0%, 100% {
+    transform: translateY(0) rotate(0deg);
+  }
+  50% {
+    transform: translateY(-5px) rotate(-1.5deg);
+  }
+}
+
+@keyframes brand-logo-sheen {
+  0%, 50% {
+    transform: translateX(-120%);
+  }
+  78%, 100% {
+    transform: translateX(120%);
   }
 }

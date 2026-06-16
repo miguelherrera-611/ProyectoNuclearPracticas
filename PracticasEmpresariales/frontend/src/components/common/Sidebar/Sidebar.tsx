@@ -2,6 +2,10 @@ import { NavLink } from 'react-router-dom'
 import { useAuth } from '../../../context/AuthContext'
 import { MENUS_POR_ROL } from '../../../constants/menus'
 
+import { ROL_LABELS } from '../../../constants/roles'
+import { BrandLogo } from '../BrandLogo/BrandLogo'
+
+
 interface SidebarProps {
   isOpen: boolean
   onClose: () => void
@@ -23,8 +27,9 @@ export default function Sidebar({ isOpen, onClose }: SidebarProps) {
       `}
     >
       {/* Logo / header */}
-      <div className="p-6 border-b border-blue-800 flex items-start justify-between">
-        <div>
+      <div className="p-5 border-b border-blue-800 flex items-start justify-between gap-3">
+        <BrandLogo variant="sidebar" />
+        <div className="sr-only">
           <h1 className="text-lg font-bold leading-tight">Prácticas Empresariales</h1>
           <p className="text-blue-300 text-xs mt-1">Univ. Alexander Von Humboldt</p>
         </div>
@@ -71,7 +76,7 @@ export default function Sidebar({ isOpen, onClose }: SidebarProps) {
           onClick={logout}
           className="w-full text-sm text-blue-300 hover:text-white transition-colors text-left flex items-center gap-2"
         >
-          <span>🚪</span> Cerrar sesión
+          <span> </span> Cerrar sesión
         </button>
       </div>
     </aside>

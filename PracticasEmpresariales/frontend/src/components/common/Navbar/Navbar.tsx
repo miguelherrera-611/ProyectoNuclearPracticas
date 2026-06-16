@@ -4,6 +4,7 @@ import { useAuth } from '../../../context/AuthContext'
 import { ROL_LABELS } from '../../../constants/roles'
 import { Modal } from '../Modal/Modal'
 import { authService } from '../../../services/authService'
+import { BrandLogo } from '../BrandLogo/BrandLogo'
 
 type EmailStep = 'closed' | 'solicitar' | 'confirmar'
 
@@ -128,7 +129,9 @@ export default function Navbar({ onMenuToggle }: NavbarProps) {
           </svg>
         </button>
         {/* Espacio vacío en desktop para mantener el layout */}
-        <div className="hidden lg:block" />
+        <div className="hidden lg:block">
+          <BrandLogo variant="compact" />
+        </div>
         <div className="flex items-center gap-3">
           {user.rol === 'DIRECCION' && (
             <span className="text-xs bg-amber-100 text-amber-800 px-2 py-1 rounded-full font-medium hidden sm:inline">
