@@ -5,6 +5,7 @@ import { Modal, ConfirmModal } from '../../components/common/Modal/Modal'
 import { Button } from '../../components/common/Button/Button'
 import { Input } from '../../components/common/Input/Input'
 import { Select } from '../../components/common/Select/Select'
+import { Table } from '../../components/common/Table/Table'
 import { ListFilters } from '../../components/common/ListFilters'
 import { Pagination } from '../../components/common/Table/Pagination'
 import { useToast } from '../../components/common/Notifications/Toast'
@@ -115,6 +116,8 @@ export default function FacultadesPage() {
     }
   }
 
+  const HEADERS = ['Facultad', 'N° Programas', 'Estado', 'Acciones']
+
   return (
     <div className="space-y-6">
       <div className="flex items-center justify-between">
@@ -123,14 +126,6 @@ export default function FacultadesPage() {
           + Nueva Facultad
         </Button>
       </div>
-
-      <Pagination
-        page={pagina}
-        totalPages={pageData?.totalPages ?? 0}
-        totalElements={pageData?.totalElements}
-        onPageChange={setPagina}
-        disabled={loading}
-      />
 
       <ListFilters
         search={{
@@ -151,78 +146,75 @@ export default function FacultadesPage() {
         </div>
       </ListFilters>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-        {loading ? (
-          <div className="col-span-3 flex justify-center py-12">
-            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-cue-primary" />
-          </div>
-        ) : facultadesFiltradas.length === 0 ? (
-          <div className="col-span-3 card text-center py-16">
-            <div className="text-gray-300 text-5xl mb-3">🏛️</div>
-            <p className="text-gray-400 text-sm">
-              {facultades.length === 0 ? 'No hay facultades registradas.' : 'No hay facultades que coincidan con los filtros.'}
-            </p>
-            <button className="mt-3 text-cue-primary text-sm font-medium hover:underline"
-              onClick={() => setModalCrear(true)}>
-              Crear la primera
-            </button>
-          </div>
-        ) : facultadesFiltradas.map(f => (
-          <div
+      <Table
+        headers={HEADERS}
+        loading={loading}
+        empty={facultadesFiltradas.length === 0}
+        emptyMessage={facultades.length === 0 ? 'No hay facultades registradas.' : 'No hay facultades que coincidan con los filtros.'}
+        emptyIcon="🏛️"
+      >
+        {facultadesFiltradas.map(f => (
+          <tr
             key={f.id}
-            className="card hover:shadow-md transition-shadow cursor-pointer"
+            className="border-b border-gray-100 hover:bg-gray-50 cursor-pointer"
             onClick={() => setPanel(f)}
           >
-            <div className="flex items-start justify-between">
-              <div className="flex-1 min-w-0">
-                <h3 className="font-semibold text-gray-800 truncate">{f.nombre}</h3>
-                {f.descripcion && <p className="text-xs text-gray-500 mt-1">{f.descripcion}</p>}
-              </div>
-              <span className={f.activa ? 'badge-apto ml-2 shrink-0' : 'badge-no-apto ml-2 shrink-0'}>
+            <td className="px-4 py-3">
+              <div className="font-medium text-gray-900">{f.nombre}</div>
+              {f.descripcion && <div className="text-xs text-gray-400 mt-0.5">{f.descripcion}</div>}
+            </td>
+            <td className="px-4 py-3 text-center text-gray-700">{f.numeroProgramas}</td>
+            <td className="px-4 py-3">
+              <span className={f.activa ? 'badge-apto' : 'badge-no-apto'}>
                 {f.activa ? 'Activa' : 'Inactiva'}
               </span>
-            </div>
-            <div className="mt-3 flex items-center justify-between">
-              <p className="text-sm text-gray-600">
-                <span className="font-semibold text-cue-primary">{f.numeroProgramas}</span> programas
-              </p>
-              <div className="flex items-center gap-3">
-              <button
-                onClick={e => { e.stopPropagation(); abrirEditar(f) }}
-                className="text-xs text-blue-600 hover:text-blue-800 transition-colors"
-              >
-                Editar
-              </button>
-              {f.activa ? (
+            </td>
+            <td className="px-4 py-3 text-center">
+              <div className="flex items-center justify-center gap-3">
                 <button
-                  onClick={e => {
-                    e.stopPropagation()
-                    if (f.tieneProgramasActivos) {
-                      setAlerta({ open: true, mensaje: `"${f.nombre}" no puede desactivarse porque tiene programas activos. Desactiva primero todos sus programas.` })
-                    } else {
-                      setConfirm({ open: true, id: f.id, nombre: f.nombre, accion: 'desactivar' })
-                    }
-                  }}
-                  className="text-xs text-red-500 hover:text-red-700 transition-colors"
+                  onClick={e => { e.stopPropagation(); abrirEditar(f) }}
+                  className="text-xs text-blue-600 hover:text-blue-800 transition-colors"
                 >
-                  Desactivar
+                  Editar
                 </button>
-              ) : (
-                <button
-                  onClick={e => {
-                    e.stopPropagation()
-                    setConfirm({ open: true, id: f.id, nombre: f.nombre, accion: 'activar' })
-                  }}
-                  className="text-xs text-green-600 hover:text-green-800 transition-colors"
-                >
-                  Activar
-                </button>
-              )}
+                {f.activa ? (
+                  <button
+                    onClick={e => {
+                      e.stopPropagation()
+                      if (f.tieneProgramasActivos) {
+                        setAlerta({ open: true, mensaje: `"${f.nombre}" no puede desactivarse porque tiene programas activos. Desactiva primero todos sus programas.` })
+                      } else {
+                        setConfirm({ open: true, id: f.id, nombre: f.nombre, accion: 'desactivar' })
+                      }
+                    }}
+                    className="text-xs text-red-500 hover:text-red-700 transition-colors"
+                  >
+                    Desactivar
+                  </button>
+                ) : (
+                  <button
+                    onClick={e => {
+                      e.stopPropagation()
+                      setConfirm({ open: true, id: f.id, nombre: f.nombre, accion: 'activar' })
+                    }}
+                    className="text-xs text-green-600 hover:text-green-800 transition-colors"
+                  >
+                    Activar
+                  </button>
+                )}
               </div>
-            </div>
-          </div>
+            </td>
+          </tr>
         ))}
-      </div>
+      </Table>
+
+      <Pagination
+        page={pagina}
+        totalPages={pageData?.totalPages ?? 0}
+        totalElements={pageData?.totalElements}
+        onPageChange={setPagina}
+        disabled={loading}
+      />
 
       {/* Drawer lateral izquierdo */}
       {panel && (
