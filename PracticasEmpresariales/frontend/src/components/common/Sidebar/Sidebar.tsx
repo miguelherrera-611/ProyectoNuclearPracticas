@@ -38,12 +38,6 @@ export default function Sidebar({ isOpen, onClose }: SidebarProps) {
         </button>
       </div>
 
-      {/* Info usuario */}
-      <div className="px-4 py-3 border-b border-blue-800">
-        <p className="text-sm font-medium truncate">{user.nombre}</p>
-        <p className="text-xs text-blue-300 mt-0.5 truncate">{user.correo}</p>
-      </div>
-
       {/* Menú dinámico por rol */}
       <nav className="flex-1 overflow-y-auto py-4">
         {menuItems.map((item) => (
@@ -59,7 +53,6 @@ export default function Sidebar({ isOpen, onClose }: SidebarProps) {
               }`
             }
           >
-            <span>{item.icono}</span>
             <span>{item.label}</span>
           </NavLink>
         ))}
