@@ -8,6 +8,7 @@ import type {
   EncuestaResponse,
   EvaluacionFinalResponse,
   NotaFinalResponse,
+  PazYSalvoResponse,
   PlantillaNotificacionResponse,
   ProgramaConfiguracionResponse,
   ReporteEstadoProcesoResponse,
@@ -130,6 +131,11 @@ export const sprint4Service = {
 
   async ejecutarCierre(instanciaId: number) {
     const res = await api.post<ApiResponse<CierreFormalResponse>>(`/api/v1/cierre-practicas/${instanciaId}/ejecutar`, { confirmarCierreIrreversible: true })
+    return res.data.datos!
+  },
+
+  async pazYSalvo(instanciaId: number) {
+    const res = await api.get<ApiResponse<PazYSalvoResponse>>(`/api/v1/cierre-practicas/${instanciaId}/paz-y-salvo`)
     return res.data.datos!
   },
 

@@ -13,6 +13,7 @@ import co.edu.cue.practicas.repository.expediente.InstanciaPracticaRepository;
 import co.edu.cue.practicas.repository.usuario.UsuarioRepository;
 import co.edu.cue.practicas.security.CustomUserDetails;
 import co.edu.cue.practicas.service.mapper.EstudianteMapper;
+import co.edu.cue.practicas.service.validator.InstanciaPracticaAccesoValidator;
 import jakarta.persistence.EntityManager;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -43,6 +44,7 @@ class VinculacionServiceTest {
     @Mock private AuditoriaLogger auditoriaLogger;
     @Mock private ApplicationEventPublisher eventPublisher;
     @Mock private EntityManager em;
+    @Mock private InstanciaPracticaAccesoValidator accesoValidator;
 
     @InjectMocks
     private VinculacionService service;
@@ -311,6 +313,46 @@ class VinculacionServiceTest {
     void listarMisPracticantesRolNoAutorizado() {
         assertThatThrownBy(() -> service.listarMisPracticantes(noCoordinador))
                 .isInstanceOf(AccesoNoAutorizadoException.class);
+    }
+
+    // =================================================================
+    // obtenerInstancia() — delega el control de acceso en InstanciaPracticaAccesoValidator
+    // =================================================================
+
+    @Test
+    @DisplayName("obtenerInstancia() exitoso delega la validacion de acceso y retorna la instancia mapeada")
+    void obtenerInstanciaExitosoDelegaValidacionDeAcceso() {
+        when(instanciaPracticaRepository.findById(INSTANCIA_ID)).thenReturn(Optional.of(instanciaAsignada));
+        when(mapper.toInstanciaPracticaResponse(instanciaAsignada)).thenReturn(responseEjemplo);
+
+        InstanciaPracticaResponse resultado = service.obtenerInstancia(INSTANCIA_ID, noCoordinador);
+
+        assertThat(resultado).isEqualTo(responseEjemplo);
+        verify(accesoValidator).validarAcceso(instanciaAsignada, noCoordinador);
+    }
+
+    @Test
+    @DisplayName("obtenerInstancia() propaga AccesoNoAutorizado cuando el validador rechaza al actor")
+    void obtenerInstanciaSinAccesoLanzaExcepcionDelValidador() {
+        when(instanciaPracticaRepository.findById(INSTANCIA_ID)).thenReturn(Optional.of(instanciaAsignada));
+        doThrow(new AccesoNoAutorizadoException("No tiene acceso a esta instancia de practica."))
+                .when(accesoValidator).validarAcceso(instanciaAsignada, noCoordinador);
+
+        assertThatThrownBy(() -> service.obtenerInstancia(INSTANCIA_ID, noCoordinador))
+                .isInstanceOf(AccesoNoAutorizadoException.class);
+
+        verify(mapper, never()).toInstanciaPracticaResponse(any());
+    }
+
+    @Test
+    @DisplayName("obtenerInstancia() con instancia inexistente lanza RecursoNoEncontrado sin consultar el validador")
+    void obtenerInstanciaInexistenteLanzaRecursoNoEncontrado() {
+        when(instanciaPracticaRepository.findById(99L)).thenReturn(Optional.empty());
+
+        assertThatThrownBy(() -> service.obtenerInstancia(99L, noCoordinador))
+                .isInstanceOf(RecursoNoEncontradoException.class);
+
+        verify(accesoValidator, never()).validarAcceso(any(), any());
     }
 
     // =================================================================

@@ -27,6 +27,7 @@ import co.edu.cue.practicas.service.encuesta.EncuestaSatisfaccionService;
 import co.edu.cue.practicas.service.evaluacion.*;
 import co.edu.cue.practicas.service.notificacion.NotificacionConfigurableService;
 import co.edu.cue.practicas.service.reporte.*;
+import co.edu.cue.practicas.service.validator.InstanciaPracticaAccesoValidator;
 
 import org.junit.jupiter.api.*;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -844,6 +845,7 @@ class Sprint4Tests {
         @Mock private NotificacionConfigurableService notificacionService;
         @Mock private ApplicationEventPublisher eventPublisher;
         @Mock private UsuarioRepository usuarioRepo;
+        @Mock private InstanciaPracticaAccesoValidator accesoValidator;
         @InjectMocks private CierreFormalFacade facade;
 
         @Test
@@ -898,6 +900,65 @@ class Sprint4Tests {
 
             assertThatThrownBy(() -> facade.ejecutar(1L, req, actor))
                     .isInstanceOf(OperacionNoPermitidaException.class);
+        }
+
+        @Test
+        @DisplayName("obtenerPazYSalvo: practica no encontrada lanza RecursoNoEncontrado")
+        void obtenerPazYSalvo_practicaNoExiste_lanzaRecursoNoEncontrado() {
+            when(instanciaRepo.findById(99L)).thenReturn(Optional.empty());
+            CustomUserDetails actor = actor(Rol.ESTUDIANTE, null);
+
+            assertThatThrownBy(() -> facade.obtenerPazYSalvo(99L, actor))
+                    .isInstanceOf(RecursoNoEncontradoException.class);
+        }
+
+        @Test
+        @DisplayName("obtenerPazYSalvo: practica aun no finalizada lanza excepcion")
+        void obtenerPazYSalvo_practicaNoFinalizada_lanzaExcepcion() {
+            InstanciaPractica instancia = instanciaEnCurso(1L, 10L);
+            when(instanciaRepo.findById(1L)).thenReturn(Optional.of(instancia));
+
+            CustomUserDetails actor = actor(Rol.ESTUDIANTE, null);
+
+            assertThatThrownBy(() -> facade.obtenerPazYSalvo(1L, actor))
+                    .isInstanceOf(OperacionNoPermitidaException.class);
+        }
+
+        @Test
+        @DisplayName("obtenerPazYSalvo: practica finalizada sin paz y salvo generado lanza RecursoNoEncontrado")
+        void obtenerPazYSalvo_sinPazYSalvoGenerado_lanzaRecursoNoEncontrado() {
+            InstanciaPractica instancia = instanciaEnCurso(1L, 10L);
+            instancia.finalizarConResultado(ResultadoPractica.NO_APROBADO);
+            when(instanciaRepo.findById(1L)).thenReturn(Optional.of(instancia));
+            when(pazYSalvoRepo.findByInstanciaPractica_Id(1L)).thenReturn(Optional.empty());
+
+            CustomUserDetails actor = actor(Rol.ESTUDIANTE, null);
+
+            assertThatThrownBy(() -> facade.obtenerPazYSalvo(1L, actor))
+                    .isInstanceOf(RecursoNoEncontradoException.class);
+        }
+
+        @Test
+        @DisplayName("obtenerPazYSalvo: practica finalizada y aprobada retorna el contenido generado")
+        void obtenerPazYSalvo_finalizadaAprobada_retornaContenido() {
+            InstanciaPractica instancia = instanciaEnCurso(1L, 10L);
+            instancia.finalizarConResultado(ResultadoPractica.APROBADO);
+            when(instanciaRepo.findById(1L)).thenReturn(Optional.of(instancia));
+            PazYSalvo pazYSalvo = PazYSalvo.builder()
+                    .instanciaPractica(instancia)
+                    .codigo("PYS-1-123")
+                    .contenido("PAZ Y SALVO PRACTICA EMPRESARIAL")
+                    .build();
+            when(pazYSalvoRepo.findByInstanciaPractica_Id(1L)).thenReturn(Optional.of(pazYSalvo));
+
+            CustomUserDetails actor = actor(Rol.ESTUDIANTE, null);
+
+            PazYSalvoResponse resp = facade.obtenerPazYSalvo(1L, actor);
+
+            assertThat(resp.getInstanciaPracticaId()).isEqualTo(1L);
+            assertThat(resp.getCodigo()).isEqualTo("PYS-1-123");
+            assertThat(resp.getContenido()).isEqualTo("PAZ Y SALVO PRACTICA EMPRESARIAL");
+            verify(accesoValidator).validarAcceso(instancia, actor);
         }
     }
 

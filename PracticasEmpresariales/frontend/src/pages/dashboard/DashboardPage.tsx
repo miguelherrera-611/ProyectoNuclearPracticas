@@ -101,37 +101,38 @@ function SeccionCard({
   const fillPct = maxContador > 0 ? (seccion.contador / maxContador) * 100 : 0
 
   const inner = (
-    <div className="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden h-full">
-      <div className={`h-1 ${meta.accent}`} />
-      <div className="p-5">
+    <div className="flex flex-col h-full bg-white rounded-2xl ring-1 ring-gray-100 shadow-sm overflow-hidden transition-all duration-200 group-hover:shadow-xl group-hover:ring-gray-200">
+      <div className={`h-1.5 ${meta.accent}`} />
+      <div className="flex flex-col flex-1 p-5 sm:p-6">
         {/* Icono + alerta */}
         <div className="flex items-start justify-between mb-4">
-          <div className={`w-9 h-9 rounded-xl ${meta.iconBg} flex items-center justify-center ${meta.iconColor} shrink-0`}>
-            <span className="w-4 h-4 [&>svg]:w-4 [&>svg]:h-4">{meta.icon}</span>
+          <div className={`w-11 h-11 rounded-2xl ${meta.iconBg} flex items-center justify-center ${meta.iconColor} ring-1 ring-inset ring-black/5 shrink-0`}>
+            <span className="w-5 h-5 [&>svg]:w-5 [&>svg]:h-5">{meta.icon}</span>
           </div>
           {urgente && !soloLectura && (
-            <span className="text-[10px] font-bold uppercase tracking-wide bg-red-50 text-red-600 border border-red-200 px-2 py-0.5 rounded-full">
+            <span className="flex items-center gap-1.5 text-[10px] font-bold uppercase tracking-wide bg-red-50 text-red-600 border border-red-100 px-2.5 py-1 rounded-full shrink-0">
+              <span className="w-1.5 h-1.5 rounded-full bg-red-500 animate-pulse" />
               Atención
             </span>
           )}
         </div>
 
         {/* Título */}
-        <p className="text-sm font-medium text-gray-600 leading-snug line-clamp-2 mb-3 min-h-[2.5rem]">
+        <p className="flex-1 text-sm font-medium text-gray-500 leading-snug line-clamp-2 mb-4">
           {seccion.titulo}
         </p>
 
-        {/* Contador */}
-        <p className={`text-3xl font-extrabold leading-none tabular-nums ${urgente ? 'text-red-600' : meta.valColor}`}>
-          {seccion.contador}
-        </p>
-
-        {/* Barra de proporción relativa */}
-        <div className="mt-4 h-1 bg-gray-100 rounded-full overflow-hidden">
-          <div
-            className={`h-full rounded-full transition-all duration-700 ${meta.accent}`}
-            style={{ width: `${fillPct}%` }}
-          />
+        {/* Contador + barra de proporción relativa */}
+        <div>
+          <p className={`text-4xl font-extrabold leading-none tabular-nums ${urgente ? 'text-red-600' : meta.valColor}`}>
+            {seccion.contador}
+          </p>
+          <div className="mt-3 h-1.5 bg-gray-100 rounded-full overflow-hidden">
+            <div
+              className={`h-full rounded-full transition-all duration-700 ${meta.accent}`}
+              style={{ width: `${fillPct}%` }}
+            />
+          </div>
         </div>
       </div>
     </div>
@@ -142,7 +143,7 @@ function SeccionCard({
   return (
     <button
       onClick={onClick}
-      className="w-full text-left h-full group hover:scale-[1.01] active:scale-[0.99] transition-transform duration-150 focus:outline-none focus:ring-2 focus:ring-cue-accent focus:ring-offset-1 rounded-2xl"
+      className="group w-full text-left h-full hover:-translate-y-1 active:translate-y-0 transition-transform duration-200 focus:outline-none focus:ring-2 focus:ring-cue-accent focus:ring-offset-2 rounded-2xl"
     >
       {inner}
     </button>
@@ -162,15 +163,15 @@ function Skeleton() {
           ))}
         </div>
       </div>
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5 sm:gap-6">
         {Array.from({ length: 6 }).map((_, i) => (
-          <div key={i} className="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden animate-pulse">
-            <div className="h-1 bg-gray-200" />
-            <div className="p-5 space-y-4">
-              <div className="w-9 h-9 rounded-xl bg-gray-100" />
+          <div key={i} className="bg-white rounded-2xl ring-1 ring-gray-100 shadow-sm overflow-hidden animate-pulse">
+            <div className="h-1.5 bg-gray-200" />
+            <div className="p-5 sm:p-6 space-y-4">
+              <div className="w-11 h-11 rounded-2xl bg-gray-100" />
               <div className="h-3 bg-gray-100 rounded w-3/4" />
-              <div className="h-8 bg-gray-100 rounded w-1/3" />
-              <div className="h-1 bg-gray-100 rounded" />
+              <div className="h-9 bg-gray-100 rounded w-1/3" />
+              <div className="h-1.5 bg-gray-100 rounded" />
             </div>
           </div>
         ))}
@@ -338,10 +339,11 @@ export default function DashboardPage() {
         </div>
       ) : (
         <>
-          <p className="text-xs font-semibold uppercase tracking-widest text-gray-400">
+          <p className="flex items-center gap-2 text-xs font-semibold uppercase tracking-widest text-gray-400">
+            <span className="w-1.5 h-1.5 rounded-full bg-cue-accent" />
             {soloLectura ? 'Detalle por indicador' : 'Acceso rápido'}
           </p>
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5 sm:gap-6">
             {secciones.map(seccion => (
               <SeccionCard
                 key={seccion.id}

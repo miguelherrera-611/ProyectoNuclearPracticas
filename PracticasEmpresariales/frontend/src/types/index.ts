@@ -398,6 +398,13 @@ export interface CierreFormalResponse {
   pazYSalvo?: string
 }
 
+export interface PazYSalvoResponse {
+  instanciaPracticaId: number
+  codigo: string
+  contenido: string
+  generadoEn: string
+}
+
 export interface ReporteEstadoProcesoResponse {
   estados: Record<string, number>
   total: number

@@ -2,12 +2,14 @@ import { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import type { InstanciaPracticaResponseV2 } from '../../types'
 import { seguimientoService } from '../../services/seguimientoService'
+import { PazYSalvoModal } from '../../components/cierre/PazYSalvoModal'
 
 export default function MiPracticaPage() {
   const navigate = useNavigate()
   const [practica, setPractica] = useState<InstanciaPracticaResponseV2 | null>(null)
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState('')
+  const [mostrarPazYSalvo, setMostrarPazYSalvo] = useState(false)
 
   useEffect(() => {
     seguimientoService.miPractica()
@@ -28,7 +30,12 @@ export default function MiPracticaPage() {
 
       {practica && (
         <>
-          <div className="card space-y-3">
+          <div
+            className={`card space-y-3 ${practica.estado === 'FINALIZADA' ? 'cursor-pointer hover:shadow-md transition-shadow' : ''}`}
+            role={practica.estado === 'FINALIZADA' ? 'button' : undefined}
+            tabIndex={practica.estado === 'FINALIZADA' ? 0 : undefined}
+            onClick={() => practica.estado === 'FINALIZADA' && setMostrarPazYSalvo(true)}
+          >
             <div className="flex items-center justify-between">
               <h2 className="font-semibold text-gray-900">{practica.nombre}</h2>
               <span className={`text-xs font-medium px-2 py-1 rounded-full ${
@@ -66,6 +73,12 @@ export default function MiPracticaPage() {
                 </div>
               </div>
             )}
+
+            {practica.estado === 'FINALIZADA' && (
+              <div className="border-t border-gray-100 pt-3">
+                <span className="text-cue-primary text-sm font-medium">Ver detalle y descargar paz y salvo →</span>
+              </div>
+            )}
           </div>
 
           {practica.estado === 'EN_CURSO' && (
@@ -84,6 +97,10 @@ export default function MiPracticaPage() {
             </div>
           )}
         </>
+      )}
+
+      {mostrarPazYSalvo && practica && (
+        <PazYSalvoModal practica={practica} onClose={() => setMostrarPazYSalvo(false)} />
       )}
     </div>
   )

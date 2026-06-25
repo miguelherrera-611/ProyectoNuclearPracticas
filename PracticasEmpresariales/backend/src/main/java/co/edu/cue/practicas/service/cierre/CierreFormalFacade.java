@@ -2,6 +2,7 @@ package co.edu.cue.practicas.service.cierre;
 
 import co.edu.cue.practicas.dto.request.EjecutarCierreRequest;
 import co.edu.cue.practicas.dto.response.CierreFormalResponse;
+import co.edu.cue.practicas.dto.response.PazYSalvoResponse;
 import co.edu.cue.practicas.event.Sprint4DomainEvent;
 import co.edu.cue.practicas.exception.AccesoNoAutorizadoException;
 import co.edu.cue.practicas.exception.OperacionNoPermitidaException;
@@ -23,6 +24,7 @@ import co.edu.cue.practicas.repository.usuario.UsuarioRepository;
 import co.edu.cue.practicas.security.CustomUserDetails;
 import co.edu.cue.practicas.service.configuracion.ProgramaConfiguracionService;
 import co.edu.cue.practicas.service.notificacion.NotificacionConfigurableService;
+import co.edu.cue.practicas.service.validator.InstanciaPracticaAccesoValidator;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.ApplicationEventPublisher;
@@ -43,6 +45,7 @@ public class CierreFormalFacade {
     private final ApplicationEventPublisher eventPublisher;
     private final UsuarioRepository usuarioRepository;
     private final ProgramaConfiguracionService configuracionService;
+    private final InstanciaPracticaAccesoValidator accesoValidator;
 
     @Transactional
     public CierreFormalResponse ejecutar(Long instanciaId, EjecutarCierreRequest req, CustomUserDetails actor) {
@@ -114,6 +117,25 @@ public class CierreFormalFacade {
                 .notaFinal(notaFinalValor)
                 .codigoPazYSalvo(codigoPazYSalvo)
                 .pazYSalvo(contenidoPazYSalvo)
+                .build();
+    }
+
+    /** Permite al estudiante (u otros actores con acceso) consultar/descargar el paz y salvo ya generado. */
+    @Transactional
+    public PazYSalvoResponse obtenerPazYSalvo(Long instanciaId, CustomUserDetails actor) {
+        InstanciaPractica instancia = instanciaRepository.findById(instanciaId)
+                .orElseThrow(() -> new RecursoNoEncontradoException("Practica no encontrada."));
+        accesoValidator.validarAcceso(instancia, actor);
+        if (instancia.getEstado() != EstadoPractica.FINALIZADA) {
+            throw new OperacionNoPermitidaException("La practica aun no ha finalizado.");
+        }
+        PazYSalvo pazYSalvo = pazYSalvoRepository.findByInstanciaPractica_Id(instanciaId)
+                .orElseThrow(() -> new RecursoNoEncontradoException("Esta practica no tiene paz y salvo generado."));
+        return PazYSalvoResponse.builder()
+                .instanciaPracticaId(instanciaId)
+                .codigo(pazYSalvo.getCodigo())
+                .contenido(pazYSalvo.getContenido())
+                .generadoEn(pazYSalvo.getGeneradoEn())
                 .build();
     }
 

@@ -6,6 +6,7 @@ import co.edu.cue.practicas.dto.request.RegistrarSustentacionRequest;
 import co.edu.cue.practicas.dto.response.ApiResponse;
 import co.edu.cue.practicas.dto.response.ChecklistCierreResponse;
 import co.edu.cue.practicas.dto.response.CierreFormalResponse;
+import co.edu.cue.practicas.dto.response.PazYSalvoResponse;
 import co.edu.cue.practicas.dto.response.SustentacionResponse;
 import co.edu.cue.practicas.security.CustomUserDetails;
 import co.edu.cue.practicas.service.cierre.ChecklistCierreService;
@@ -65,5 +66,13 @@ public class CierrePracticaController {
             @AuthenticationPrincipal CustomUserDetails actor) {
         return ResponseEntity.ok(ApiResponse.ok("Cierre formal ejecutado.",
                 cierreFacade.ejecutar(instanciaId, request, actor)));
+    }
+
+    @GetMapping("/{instanciaId}/paz-y-salvo")
+    public ResponseEntity<ApiResponse<PazYSalvoResponse>> pazYSalvo(
+            @PathVariable Long instanciaId,
+            @AuthenticationPrincipal CustomUserDetails actor) {
+        return ResponseEntity.ok(ApiResponse.ok("Paz y salvo de la practica.",
+                cierreFacade.obtenerPazYSalvo(instanciaId, actor)));
     }
 }

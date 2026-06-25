@@ -19,6 +19,7 @@ import co.edu.cue.practicas.repository.expediente.InstanciaPracticaRepository;
 import co.edu.cue.practicas.repository.usuario.UsuarioRepository;
 import co.edu.cue.practicas.security.CustomUserDetails;
 import co.edu.cue.practicas.service.mapper.EstudianteMapper;
+import co.edu.cue.practicas.service.validator.InstanciaPracticaAccesoValidator;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
 import jakarta.transaction.Transactional;
@@ -53,6 +54,7 @@ public class VinculacionService {
     private final EstudianteMapper mapper;
     private final AuditoriaLogger auditoriaLogger;
     private final ApplicationEventPublisher eventPublisher;
+    private final InstanciaPracticaAccesoValidator accesoValidator;
 
     @Transactional
     public InstanciaPracticaResponse confirmarVinculacion(Long instanciaId,
@@ -246,34 +248,8 @@ public class VinculacionService {
     public InstanciaPracticaResponse obtenerInstancia(Long instanciaId, CustomUserDetails actor) {
         InstanciaPractica instancia = instanciaPracticaRepository.findById(instanciaId)
                 .orElseThrow(() -> new RecursoNoEncontradoException(MSG_INSTANCIA_NO_ENCONTRADA));
-        verificarAccesoInstancia(instancia, actor);
+        accesoValidator.validarAcceso(instancia, actor);
         return conEvaluacion(mapper.toInstanciaPracticaResponse(instancia), instancia.getId());
-    }
-
-    private void verificarAccesoInstancia(InstanciaPractica instancia, CustomUserDetails actor) {
-        Rol rol = actor.getRol();
-        if (rol == Rol.ADMIN_DTI || rol == Rol.DIRECCION) return;
-        if (rol == Rol.COORDINADOR_PRACTICAS) {
-            validarInstanciaEnFacultadDelCoordinador(instancia, actor);
-            return;
-        }
-        if (rol == Rol.DOCENTE_ASESOR) {
-            if (instancia.getDocenteAsesor() == null || !instancia.getDocenteAsesor().getId().equals(actor.getId()))
-                throw new AccesoNoAutorizadoException("No tiene acceso a esta instancia de practica.");
-            return;
-        }
-        if (rol == Rol.TUTOR_EMPRESARIAL) {
-            if (instancia.getTutorEmpresarial() == null
-                    || !instancia.getTutorEmpresarial().getCorreo().equalsIgnoreCase(actor.getUsername()))
-                throw new AccesoNoAutorizadoException("No tiene acceso a esta instancia de practica.");
-            return;
-        }
-        if (rol == Rol.ESTUDIANTE) {
-            if (instancia.getExpediente() == null || !instancia.getExpediente().getEstudiante().getId().equals(actor.getId()))
-                throw new AccesoNoAutorizadoException("No tiene acceso a esta instancia de practica.");
-            return;
-        }
-        throw new AccesoNoAutorizadoException("No tiene permiso para consultar esta practica.");
     }
 
     private void validarInstanciaEnFacultadDelCoordinador(InstanciaPractica instancia, CustomUserDetails actor) {
